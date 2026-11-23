@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="PinkJack" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="co.blackjack.Main" />
+    <module name="blackjack-21" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
