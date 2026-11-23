@@ -4,7 +4,6 @@ import co.blackjack.datos.Crupier;
 import co.blackjack.datos.Jugador;
 import co.blackjack.datos.Mazo;
 import co.blackjack.datos.ResultadoRonda;
-import lombok.Getter;
 
 public class Ronda {
     private final Jugador jugador;
@@ -12,8 +11,9 @@ public class Ronda {
     private final Mazo mazo;
     private final Reglas reglas;
 
-    @Getter
     private ResultadoRonda resultado;
+
+    public ResultadoRonda getResultado() { return resultado; }
 
     public Ronda(Jugador jugador, Crupier crupier, Mazo mazo) {
         this.jugador = jugador;

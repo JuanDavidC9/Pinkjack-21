@@ -1,11 +1,11 @@
 package co.blackjack.datos;
 
-import lombok.Getter;
-
-@Getter
 public abstract class Participante {
     private final String nombre;
     private final Mano mano;
+
+    public String getNombre() { return nombre; }
+    public Mano getMano() { return mano; }
 
     public Participante(String nombre) {
         this.nombre = nombre;

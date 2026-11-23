@@ -14,6 +14,11 @@ public class Reglas {
             return ResultadoRonda.GANADA;
         }
 
+        boolean naturalJugador = jugador.getMano().esBlackjackNatural();
+        boolean naturalCrupier = crupier.getMano().esBlackjackNatural();
+        if (naturalJugador && !naturalCrupier) return ResultadoRonda.GANADA;
+        if (naturalCrupier && !naturalJugador) return ResultadoRonda.PERDIDA;
+
         int puntosJugador = jugador.obtenerPuntuacion();
         int puntosCrupier = crupier.obtenerPuntuacion();
 

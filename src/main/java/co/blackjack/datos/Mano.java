@@ -6,6 +6,12 @@ import java.util.List;
 public class Mano {
     private final List<Carta> cartas = new ArrayList<>();
 
+    public List<Carta> getCartas() { return List.copyOf(cartas); }
+
+    public boolean esBlackjackNatural() {
+        return cartas.size() == 2 && calcularPuntuacion() == 21;
+    }
+
     public void agregarCarta(Carta carta) {
         cartas.add(carta);
     }
@@ -23,7 +29,7 @@ public class Mano {
                 ases++;
             }
         }
-        // Si se pasa de 21, los Ases pasan de valer 11 a valer 1
+
         while (total > 21 && ases > 0) {
             total -= 10;
             ases--;
