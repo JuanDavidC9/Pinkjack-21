@@ -175,7 +175,7 @@ public class VentanaJuego extends JFrame {
         etiqueta("Jugador", 407, 389, 300, 44, 28, true);
         etiqueta("Saldo: " + partida.getSaldo() + " puntos", 90, 200, 355, 40, 28, true);
         JLabel instrucciones = etiqueta(bloqueada ? "Repartiendo cartas..." :
-                mensajeDeMesa(), 25, 615, 710, 65, 19, false);
+                mensajeDeMesa(), 25, 615, 710, 65, 25, true);
         instrucciones.setVerticalAlignment(SwingConstants.TOP);
 
         if (partida.getJugador() != null) {
