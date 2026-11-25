@@ -4,14 +4,15 @@ import co.blackjack.datos.Carta;
 import co.blackjack.datos.Participante;
 import co.blackjack.operaciones.Partida;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,20 +28,21 @@ public class VentanaJuego extends JFrame {
     private static final int Y_JUGADOR = 457;
     private static final int ANCHO_CARTA = 102;
     private static final int ALTO_CARTA = 143;
-    private static final Color TINTA = new Color(52, 48, 56);
+    private static final Color TINTA = new Color(227, 235, 255);
     private static final Color ROSA = new Color(185, 55, 147);
-    private static final Font FONT_NORMAL = new Font("SansSerif", Font.PLAIN, 24);
-
+    //private static final Font FONT_NORMAL = new Font("SansSerif", Font.PLAIN, 24);
     private final Map<String, BufferedImage> imagenes = new HashMap<>();
     private Partida partida = new Partida();
     private PanelImagen panel;
     private Timer timerMovimiento;
     private boolean repartiendo = false;
+    private Font fuenteBase;
 
     public VentanaJuego() {
         super("PinkJack 21");
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
+        fuenteBase = cargarFuente();   // NUEVO (antes de mostrarInicio)
         mostrarInicio();
         pack();
         setLocationRelativeTo(null);
@@ -65,6 +67,25 @@ public class VentanaJuego extends JFrame {
                 new ImageIcon(imagen.getScaledInstance(ancho, alto, Image.SCALE_SMOOTH));
     }
 
+    // NUEVO
+    private Font cargarFuente() {
+        try (InputStream in = getClass().getResourceAsStream("/assets/fuentes/mifuente.ttf")) {
+            if (in != null) {
+                Font fuente = Font.createFont(Font.TRUETYPE_FONT, in);
+                GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(fuente);
+                return fuente;
+            }
+        } catch (FontFormatException | IOException error) {
+            // si falla, se usa la fuente por defecto
+        }
+        return new Font("SansSerif", Font.PLAIN, 12);
+    }
+
+    // NUEVO
+    private Font fuente(boolean negrita, float tamano) {
+        return fuenteBase.deriveFont(negrita ? Font.BOLD : Font.PLAIN, tamano);
+    }
+
     private void nuevaPantalla(String fondo) {
         if (timerMovimiento != null) {
             timerMovimiento.stop();
@@ -82,7 +103,7 @@ public class VentanaJuego extends JFrame {
     private JLabel etiqueta(String texto, int x, int y, int w, int h, int tamano, boolean negrita) {
         JLabel label = new JLabel(texto);
         label.setForeground(TINTA);
-        label.setFont(new Font("SansSerif", negrita ? Font.BOLD : Font.PLAIN, tamano));
+        label.setFont(fuente(negrita, tamano));
         label.setBounds(x, y, w, h);
         panel.add(label);
         return label;
@@ -106,7 +127,7 @@ public class VentanaJuego extends JFrame {
             boton.setContentAreaFilled(false);
             boton.setFocusPainted(false);
         } else {
-            boton.setFont(new Font("SansSerif", Font.BOLD, 22));
+            boton.setFont(fuente(true, 22f));   // CAMBIO
         }
         boton.setBounds(x, y, w, h);
         boton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -119,15 +140,15 @@ public class VentanaJuego extends JFrame {
     private void mostrarInicio() {
         repartiendo = false;
         nuevaPantalla("home.png");
-        centrado("Pink Jack", 270, 85, 740, 110, 88, ROSA);
-        centrado("Blackjack (21)", 260, 220, 760, 60, 29, TINTA);
-        boton("btn_empezar.png", "Empezar", 460, 305, 360, 95, e -> {
+        //centrado("Pink Jack", 270, 85, 740, 110, 88, ROSA);
+        //centrado("Blackjack (21)", 260, 220, 760, 60, 29, TINTA);
+        boton("btn_empezar.png", "Empezar", 520, 305, 360, 95, e -> {
             partida = new Partida();
             mostrarJuego();
         });
-        boton("btn_creditos.png", "Creditos", 460, 420, 360, 95, e -> mostrarCreditos());
+        boton("btn_creditos.png", "Creditos", 520, 420, 360, 95, e -> mostrarCreditos());
 
-        boton("btn_reglas_inicio.png", "Reglas", 460, 535, 360, 95, e -> mostrarReglas());
+        boton("btn_reglas_inicio.png", "Reglas", 520, 535, 360, 95, e -> mostrarReglas());
     }
 
     private void mostrarCreditos() {
@@ -148,11 +169,11 @@ public class VentanaJuego extends JFrame {
     private void mostrarJuego(int visiblesJugador, int visiblesCrupier,
                               boolean ocultarSegunda, boolean bloqueada) {
         nuevaPantalla("juego.png");
-        centrado("PINK JACK - 21", 300, 15, 680, 74, 47, ROSA);
+        //centrado("PINK JACK - 21", 300, 15, 680, 74, 47, ROSA);
         if (!bloqueada) boton("btn_reglas.png", "Reglas", 1168, 25, 72, 72, e -> mostrarReglas());
         etiqueta("Crupier", 407, 100, 300, 44, 28, true);
-        etiqueta("Jugador", 407, 399, 300, 44, 28, true);
-        etiqueta("Saldo: " + partida.getSaldo() + " puntos", 30, 180, 355, 40, 25, true);
+        etiqueta("Jugador", 407, 389, 300, 44, 28, true);
+        etiqueta("Saldo: " + partida.getSaldo() + " puntos", 90, 200, 355, 40, 28, true);
         JLabel instrucciones = etiqueta(bloqueada ? "Repartiendo cartas..." :
                 mensajeDeMesa(), 25, 615, 710, 65, 19, false);
         instrucciones.setVerticalAlignment(SwingConstants.TOP);
@@ -161,10 +182,10 @@ public class VentanaJuego extends JFrame {
             Participante jugador = partida.getJugador();
             Participante crupier = partida.getCrupier();
             etiqueta("Puntos: " + (bloqueada ? "..." : jugador.obtenerPuntuacion()),
-                    725, 399, 270, 44, 25, true);
+                    1000, 389, 270, 44, 25, true);
             etiqueta("Puntos del crupier: " + (ocultarSegunda || bloqueada ? "?" :
-                    crupier.obtenerPuntuacion()), 725, 100, 370, 44, 24, true);
-            etiqueta("Apuesta actual: " + partida.getApuestaActual(), 30, 288, 350, 40, 22, true);
+                    crupier.obtenerPuntuacion()), 950, 100, 370, 44, 24, true);
+            etiqueta("Apuesta actual: " + partida.getApuestaActual(), 90, 288, 350, 40, 28, true);
             mostrarCartas(crupier, X_CARTAS, Y_CRUPIER, ocultarSegunda, visiblesCrupier);
             mostrarCartas(jugador, X_CARTAS, Y_JUGADOR, false, visiblesJugador);
             JLabel mazo = new JLabel(icono("cartas/reverso.png", 80, 112));
@@ -172,26 +193,26 @@ public class VentanaJuego extends JFrame {
             mazo.setBounds(X_MAZO + 11, Y_MAZO, 80, 112);
             panel.add(mazo);
         } else {
-            etiqueta("La mesa esta lista para jugar", 428, 204, 650, 60, 24, false);
+            etiqueta("La mesa esta lista para jugar", 428, 204, 650, 60, 30, true);
         }
 
         if (!bloqueada && partida.isRondaActiva()) {
-            boton("btn_pedir.png", "Pedir", 785, 616, 195, 80, e -> ejecutarTurno(false));
-            boton("btn_plantarse.png", "Plantarse", 990, 616, 245, 80,
+            boton("btn_pedir.png", "Pedir", 785, 630, 195, 80, e -> ejecutarTurno(false));
+            boton("btn_plantarse.png", "Plantarse", 990, 630, 245, 80,
                     e -> ejecutarTurno(true));
         } else if (!bloqueada && partida.puedeApostar()) {
             etiqueta(partida.getSaldo() < Partida.APUESTA_MINIMA
                     ? "Última apuesta:" : "Apuesta (múltiplos de 10):",
-                    30, 356, 355, 40, 18, true);
+                    85, 330, 355, 40, 25, true);
             int inicial = Math.min(100, partida.getSaldo());
             int apuestaMinima = Math.min(Partida.APUESTA_MINIMA, partida.getSaldo());
             int incremento = partida.getSaldo() < Partida.APUESTA_MINIMA ? apuestaMinima : 10;
             JSpinner puntos = new JSpinner(new SpinnerNumberModel(inicial, apuestaMinima,
                     partida.getSaldo(), incremento));
-            puntos.setFont(FONT_NORMAL);
-            puntos.setBounds(45, 398, 210, 58);
+            puntos.setFont(fuente(false, 24f));   // CAMBIO
+            puntos.setBounds(95, 370, 210, 58);
             panel.add(puntos);
-            boton("btn_apostar.png", "Apostar", 45, 476, 220, 90, e -> {
+            boton("btn_apostar.png", "Apostar", 90, 445, 220, 90, e -> {
                 if (repartiendo) return;
                 try {
                     puntos.commitEdit();
@@ -408,7 +429,7 @@ public class VentanaJuego extends JFrame {
                 + "10. FIN DEL JUEGO\n"
                 + "    La derrota definitiva solo aparece cuando tu saldo llega a cero.";
         JTextArea contenido = new JTextArea(reglas);
-        contenido.setFont(new Font("SansSerif", Font.PLAIN, 19));
+        contenido.setFont(fuente(false, 19f));   // CAMBIO
         contenido.setEditable(false);
         contenido.setOpaque(false);
         contenido.setBorder(new EmptyBorder(19, 25, 19, 25));
